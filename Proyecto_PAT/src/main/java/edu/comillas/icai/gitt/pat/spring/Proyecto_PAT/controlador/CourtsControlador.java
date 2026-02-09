@@ -31,4 +31,23 @@ public class CourtsControlador {
     public Collection<Court> getCourts() {
         return courts.values();
     }
+    // Obtener una pista por id
+    @GetMapping("/pistaPadel/courts/{idCourt}")
+    public Court getCourt(@PathVariable int idCourt) {
+        return courts.get(idCourt);
+    }
+
+    // Modificar pista
+    @PutMapping("/pistaPadel/courts/{idCourt}")
+    public Court modificarCourt(@PathVariable int idCourt,
+                                @RequestBody Court court) {
+        courts.put(idCourt, court);
+        return court;
+    }
+
+    // Borrar pista
+    @DeleteMapping("/pistaPadel/courts/{idCourt}")
+    public void borrarCourt(@PathVariable int idCourt) {
+        courts.remove(idCourt);
+    }
 }
