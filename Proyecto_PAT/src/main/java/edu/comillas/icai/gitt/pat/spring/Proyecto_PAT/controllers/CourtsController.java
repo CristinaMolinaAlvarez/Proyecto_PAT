@@ -19,7 +19,7 @@ public class CourtsController {
             3, new Pista(3, "Pista 3", "Interior", 25.0, false, LocalDateTime.now())
     ));
 
-    // Crear pista
+    // Crear pista padel
     @PostMapping("/pistaPadel/courts")
     @ResponseStatus(HttpStatus.CREATED)
     public Pista crearCourt(@RequestBody Pista pista) {
