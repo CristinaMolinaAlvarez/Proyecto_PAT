@@ -1,4 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo;
 
-public class Reservation {
+public enum Rol {
+    USER,
+    ADMIN
 }
