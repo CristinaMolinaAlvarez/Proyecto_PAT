@@ -21,3 +21,5 @@ public record Reserva(
         CANCELADA
     }
 }
+
+// COMENTARIO
