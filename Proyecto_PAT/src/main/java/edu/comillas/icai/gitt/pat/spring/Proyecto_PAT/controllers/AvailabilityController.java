@@ -11,9 +11,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+//Calcularemos qué horas están libres en una pista para un día, mirando las reservas activas
+@RestController //Esta clase define endpoints REST y lo que se devuelve se convierte en JSON
 public class AvailabilityController {
 
+    //Acceso a reservas para poder calcular la disponibilidad
     private final ReservationsController reservationsController;
 
     public AvailabilityController(ReservationsController reservationsController) {
@@ -24,21 +26,24 @@ public class AvailabilityController {
 
     @GetMapping("/pistaPadel/availability")
     public Object availability(
-            @RequestParam(required = false) String date,
-            @RequestParam(required = false) Integer courtId
+            @RequestParam(required = false) String date, //podemos llamarlo para todas las pistas
+            @RequestParam(required = false) Integer courtId //o para una en concreto
     ) {
 
+        //Si no tiene date, responde 400
         if (date == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
 
+        //Convierte el String a LocalDate y si esta mal formado devuelve 400
         LocalDate parsedDate = parseDateOr400(date);
 
+        //Devolvemos la disponibilidad de una pista si viene courtDate
         if (courtId != null) {
             return calculateAvailability(parsedDate, courtId);
         }
 
-        // Si no viene courtId → devolvemos para todas (1..3 hardcode Parte 1)
+        // Si no viene courtId devolvemos para todas
         List<Disponibilidad> resultado = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             resultado.add(calculateAvailability(parsedDate, i));
@@ -61,6 +66,7 @@ public class AvailabilityController {
 
         LocalDate parsedDate = parseDateOr400(date);
 
+        //si piden la pista 99, 404 (No existe)
         if (courtId < 1 || courtId > 3) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -68,20 +74,24 @@ public class AvailabilityController {
         return calculateAvailability(parsedDate, courtId);
     }
 
-    // LÓGICA DE CÁLCULO (esto es lo importante)
+    // LÓGICA CENTRAL
 
     private Disponibilidad calculateAvailability(LocalDate date, int courtId) {
 
-        // Horario del club (definido por aplicación) :contentReference[oaicite:3]{index=3}
+        // Horario del club
+        // El horario será de 09:00-22:00
+        // Los slots serán de 60 minutos
         List<LocalTime> allSlots = generateSlots(
                 LocalTime.of(9, 0),
                 LocalTime.of(22, 0),
                 60
         );
 
+        //Pide todas las reservas que existen
         List<Reserva> reservas = reservationsController.getAllInternal();
-        // Este método interno lo tienes que exponer en ReservationsController
 
+
+        // Recorre cada hora posible del dia y mira si existe alguna reserva de la pista, de ese día, activa
         List<LocalTime> libres = new ArrayList<>();
 
         for (LocalTime slot : allSlots) {
@@ -94,14 +104,15 @@ public class AvailabilityController {
                             !slot.isBefore(r.horaInicio())
                                     && slot.isBefore(r.horaFin())
                     );
-
+            //Si no está ocupado lo devuelve a libres
             if (!ocupado) {
                 libres.add(slot);
             }
         }
-
+        //Devuelve la disponibilidad
         return new Disponibilidad(courtId, date, libres);
     }
+
 
     private LocalDate parseDateOr400(String date) {
         try {

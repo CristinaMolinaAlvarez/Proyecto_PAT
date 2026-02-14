@@ -132,9 +132,11 @@ public class ReservationsController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
     }
 
+
     public List<Reserva> getAllInternal() {
         return new ArrayList<>(reservas.values());
     }
+
 
     private int resolverUserId(Authentication auth) {
         return auth.getName().equals("usuario") ? 1 : 999;
