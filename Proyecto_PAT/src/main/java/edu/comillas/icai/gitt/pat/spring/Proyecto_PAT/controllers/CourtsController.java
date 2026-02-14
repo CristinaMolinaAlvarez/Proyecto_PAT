@@ -24,18 +24,35 @@ public class CourtsController {
 
     // Crear pista padel
     @PostMapping("/pistaPadel/courts")
-    @PreAuthorize("hasRole('ADMIN')") // 401 si no autenticado y 403 si no es ADMIN
-    @ResponseStatus(HttpStatus.CREATED) // 201 si se crea correctamente
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public Pista crearCourt(@Valid @RequestBody Pista pista) {
-        // 400 si fallan validaciones (@Valid en el record Pista)
 
-        // 409 si la pista ya existe (regla de negocio)
-        if (pistas.containsKey(pista.idPista())) {
+        // Si no viene idPista, lo generamos nosotros
+        Integer id = pista.idPista();
+        if (id == null) {
+            id = pistas.keySet().stream().mapToInt(Integer::intValue).max().orElse(0) + 1;
+        }
+
+        // Si no viene fechaAlta, la ponemos nosotros
+        LocalDateTime fechaAlta = (pista.fechaAlta() != null) ? pista.fechaAlta() : LocalDateTime.now();
+
+        Pista pistaFinal = new Pista(
+                id,
+                pista.nombre(),
+                pista.ubicacion(),
+                pista.precioHora(),
+                pista.activa(),
+                fechaAlta
+        );
+
+        // 409 si ya existe
+        if (pistas.containsKey(pistaFinal.idPista())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        pistas.put(pista.idPista(), pista);
-        return pista; // 201 cuando va bien
+        pistas.put(pistaFinal.idPista(), pistaFinal);
+        return pistaFinal;
     }
 
     // Obtener lista de pistas
@@ -70,8 +87,19 @@ public class CourtsController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        pistas.put(courtId, pista);
-        return pista; // 200 por defecto si se modifica correctamente
+        LocalDateTime fechaAlta = (pista.fechaAlta() != null) ? pista.fechaAlta() : LocalDateTime.now();
+
+        Pista pistaFinal = new Pista(
+                courtId,
+                pista.nombre(),
+                pista.ubicacion(),
+                pista.precioHora(),
+                pista.activa(),
+                fechaAlta
+        );
+
+        pistas.put(courtId, pistaFinal);
+        return pistaFinal;
     }
 
     // Borrar pista

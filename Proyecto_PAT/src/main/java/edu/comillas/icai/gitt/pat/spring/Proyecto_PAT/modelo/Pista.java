@@ -6,8 +6,8 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDateTime;
 
 public record Pista(
-        int idPista,
-        // No puede ser null ni vacío
+        Integer idPista,
+
         @NotBlank(message = "El nombre no puede estar vacío")
         String nombre,
         @NotBlank(message = "La ubicación no puede estar vacía")
@@ -18,6 +18,6 @@ public record Pista(
 
         boolean activa,
 
-        @NotNull(message = "La fecha es obligatoria")
+        // @NotNull(message = "La fecha es obligatoria")
         LocalDateTime fechaAlta
 ) {}
