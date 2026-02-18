@@ -190,8 +190,8 @@ Esto permitió verificar que la API responde correctamente en todas las situacio
 
 ## 8. Manual de usuario (Postman)
 
-Enlace a la colección Postman: AÑADIR AQUÍ
-
+Enlace a la colección Postman:  
+[Ver colección en Postman](https://crismo5-882828.postman.co/workspace/Cristina's-Workspace~0a90e8fb-3202-4457-87ca-878bb8d28539/folder/51822749-54b9f981-f2ec-4bb5-a639-14adbbe22093?action=share&source=copy-link&creator=51822749&ctx=documentation)
 Flujo de prueba recomendado:
 
 1. Registrar un usuario o utilizar uno existente.
