@@ -6,14 +6,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 
 //Nos permite que un ADMIN vea todas las reservas del sistema, con filtros opcionales
 @RestController
 public class AdminController {
 
-    // crea reservations controller, admin controller y le pasa referencia a reservationscontroller, admin necesita acceder a la memoria
+    // crea reservations controller, admin controller y le pasa referencia a reservationsController
+    // admin necesita acceder a la memoria de reservas
     private final ReservationsController reservationsController;
 
     public AdminController(ReservationsController reservationsController) {
@@ -21,16 +22,17 @@ public class AdminController {
     }
 
     // (ADMIN) Ver reservas de todos
-    //Endpoint principal
+    // Endpoint principal
     @GetMapping("/pistaPadel/admin/reservations")
-    // Antes de que se ejecute hay que ver si la persona esta logueada y si eres admin o no (gestionado por SpringSecurity)
+    // Antes de ejecutarse se valida autenticación y rol (Spring Security)
     @PreAuthorize("hasRole('ADMIN')") // 401 si no autenticado, 403 si no es ADMIN
     public List<Reserva> getAllReservations(
             @RequestParam(required = false) String date,
             @RequestParam(required = false) Integer courtId,
             @RequestParam(required = false) Integer userId
     ) {
-        //Observamos todas las reservas
+
+        // Observamos todas las reservas
         List<Reserva> reservas = reservationsController.getAllInternal();
 
         // Filtro por date si viene
@@ -41,9 +43,10 @@ public class AdminController {
                         .filter(r -> r.fechaReserva().equals(parsedDate))
                         .toList();
             } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 400 si formato incorrecto
             }
         }
+
         // Filtro por courtId si viene
         if (courtId != null) {
             reservas = reservas.stream()
@@ -58,7 +61,6 @@ public class AdminController {
                     .toList();
         }
 
-        return reservas; // 200
+        return reservas; // 200 si funciona
     }
-    }
-
+}

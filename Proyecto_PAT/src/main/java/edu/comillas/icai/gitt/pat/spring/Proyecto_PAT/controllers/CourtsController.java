@@ -7,20 +7,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class CourtsController {
 
-    // HashMap hardcodeado para no tener que meterlo cada vez en Postman
-    private final Map<Integer, Pista> pistas = new HashMap<>(Map.of(
-            1, new Pista(1, "Pista 1", "Interior", 20.0, true, LocalDateTime.now()),
-            2, new Pista(2, "Pista 2", "Exterior", 18.0, true, LocalDateTime.now()),
-            3, new Pista(3, "Pista 3", "Interior", 25.0, false, LocalDateTime.now())
-    ));
+    private final BaseDatos baseDatos;
+
+    public CourtsController(BaseDatos baseDatos) {
+        this.baseDatos = baseDatos;
+    }
 
     // Crear pista
     @PostMapping("/pistaPadel/courts")
@@ -30,25 +26,25 @@ public class CourtsController {
         // 400 si fallan validaciones (@Valid en el record Pista)
 
         // 409 si la pista ya existe (regla de negocio)
-        if (pistas.containsKey(pista.idPista())) {
+        if (baseDatos.pistas().containsKey(pista.idPista())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        pistas.put(pista.idPista(), pista);
+        baseDatos.pistas().put(pista.idPista(), pista);
         return pista; // 201 cuando va bien
     }
 
     // Obtener lista de pistas
     @GetMapping("/pistaPadel/courts")
     public Collection<Pista> getCourts() {
-        return pistas.values(); // 200 por defecto si va bien
+        return baseDatos.pistas().values(); // 200 por defecto si va bien
     }
 
     // Obtener una pista por id
     @GetMapping("/pistaPadel/courts/{courtId}")
     public Pista getCourt(@PathVariable int courtId) {
-        // obtenemos el id de la URL (PathVariable)
-        Pista pista = pistas.get(courtId);
+
+        Pista pista = baseDatos.pistas().get(courtId);
 
         // 404 si la pista no existe
         if (pista == null) {
@@ -66,11 +62,11 @@ public class CourtsController {
         // 400 si fallan validaciones (@Valid)
 
         // 404 si la pista no existe
-        if (!pistas.containsKey(courtId)) {
+        if (!baseDatos.pistas().containsKey(courtId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        pistas.put(courtId, pista);
+        baseDatos.pistas().put(courtId, pista);
         return pista; // 200 por defecto si se modifica correctamente
     }
 
@@ -79,15 +75,15 @@ public class CourtsController {
     @PreAuthorize("hasRole('ADMIN')") // 401 si no autenticado y 403 si no es ADMIN
     @ResponseStatus(HttpStatus.NO_CONTENT) // 204 si se elimina correctamente
     public void borrarCourt(@PathVariable int courtId) {
+
         // 404 si la pista no existe
-        if (!pistas.containsKey(courtId)) {
+        if (!baseDatos.pistas().containsKey(courtId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        pistas.remove(courtId); // 204 si va bien
+        baseDatos.pistas().remove(courtId); // 204 si va bien
     }
 }
-
 
 /*
 Resumen:
