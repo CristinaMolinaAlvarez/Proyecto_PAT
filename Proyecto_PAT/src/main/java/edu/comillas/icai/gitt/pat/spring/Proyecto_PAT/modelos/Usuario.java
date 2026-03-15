@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -47,6 +48,9 @@ public class Usuario {
         private boolean activo;
 
         // Un usuario puede tener muchas reservas
+        // Se ignora en JSON para evitar bucle infinito entre Usuario/Pista y Reserva
+        @JsonIgnore
+        // Un usuario puede tener muchas reservas
         // Si se borra un usuario se borran sus reservas
         @OneToMany(mappedBy = "usuario")
         @OnDelete(action = OnDeleteAction.CASCADE)
@@ -66,16 +70,87 @@ public class Usuario {
                 this.activo = activo;
         }
 
+        // GETTERS
+
         public Integer getIdUsuario() {
                 return idUsuario;
+        }
+
+        public String getNombre() {
+                return nombre;
+        }
+
+        public String getApellidos() {
+                return apellidos;
         }
 
         public String getEmail() {
                 return email;
         }
 
+        public String getPassword() {
+                return password;
+        }
+
+        public String getTelefono() {
+                return telefono;
+        }
+
         public Rol getRol() {
                 return rol;
         }
 
+        public LocalDateTime getFechaRegistro() {
+                return fechaRegistro;
+        }
+
+        public boolean isActivo() {
+                return activo;
+        }
+
+        public List<Reserva> getReservas() {
+                return reservas;
+        }
+
+        // SETTERS
+
+        public void setIdUsuario(Integer idUsuario) {
+                this.idUsuario = idUsuario;
+        }
+
+        public void setNombre(String nombre) {
+                this.nombre = nombre;
+        }
+
+        public void setApellidos(String apellidos) {
+                this.apellidos = apellidos;
+        }
+
+        public void setEmail(String email) {
+                this.email = email;
+        }
+
+        public void setPassword(String password) {
+                this.password = password;
+        }
+
+        public void setTelefono(String telefono) {
+                this.telefono = telefono;
+        }
+
+        public void setRol(Rol rol) {
+                this.rol = rol;
+        }
+
+        public void setFechaRegistro(LocalDateTime fechaRegistro) {
+                this.fechaRegistro = fechaRegistro;
+        }
+
+        public void setActivo(boolean activo) {
+                this.activo = activo;
+        }
+
+        public void setReservas(List<Reserva> reservas) {
+                this.reservas = reservas;
+        }
 }

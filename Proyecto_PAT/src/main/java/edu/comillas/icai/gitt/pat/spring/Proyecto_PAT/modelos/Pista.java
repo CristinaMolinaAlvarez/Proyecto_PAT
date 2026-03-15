@@ -49,13 +49,10 @@ public class Pista {
                 this.activa = activa;
                 this.fechaAlta = fechaAlta;
         }
+        // GETTERS
 
         public Integer getIdPista() {
                 return idPista;
-        }
-
-        public void setIdPista(Integer idPista) {
-                this.idPista = idPista;
         }
 
         public String getNombre() {
@@ -78,4 +75,37 @@ public class Pista {
                 return fechaAlta;
         }
 
+        public List<Reserva> getReservas() {
+                return reservas;
+        }
+
+        // SETTERS
+
+        public void setIdPista(Integer idPista) {
+                this.idPista = idPista;
+        }
+
+        public void setNombre(String nombre) {
+                this.nombre = nombre;
+        }
+
+        public void setUbicacion(String ubicacion) {
+                this.ubicacion = ubicacion;
+        }
+
+        public void setPrecioHora(double precioHora) {
+                this.precioHora = precioHora;
+        }
+
+        public void setActiva(boolean activa) {
+                this.activa = activa;
+        }
+
+        public void setFechaAlta(LocalDateTime fechaAlta) {
+                this.fechaAlta = fechaAlta;
+        }
+
+        public void setReservas(List<Reserva> reservas) {
+                this.reservas = reservas;
+        }
 }

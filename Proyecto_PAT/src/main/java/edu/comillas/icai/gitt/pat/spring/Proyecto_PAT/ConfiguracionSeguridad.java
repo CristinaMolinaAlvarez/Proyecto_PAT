@@ -3,6 +3,7 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers.BaseDatos;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,10 +21,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class ConfiguracionSeguridad {
-    private final BaseDatos baseDatos;
+    private final UsuarioRepo usuarioRepo;
 
-    public ConfiguracionSeguridad(BaseDatos baseDatos) {
-        this.baseDatos = baseDatos;
+    public ConfiguracionSeguridad(UsuarioRepo usuarioRepo) {
+        this.usuarioRepo = usuarioRepo;
     }
 
     @Bean
@@ -67,20 +68,16 @@ public class ConfiguracionSeguridad {
 
     @Bean
     public UserDetailsService usuarios() {
-
         return email -> {
-
-            Usuario usuario = baseDatos.usuarios().values().stream()
-                    .filter(u -> u.email().equalsIgnoreCase(email))
-                    .findFirst()
+            Usuario usuario = usuarioRepo.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
             return User.withDefaultPasswordEncoder()
-                    .username(usuario.email())
-                    .password(usuario.password())
-                    .roles(usuario.rol().name())
+                    .username(usuario.getEmail())
+                    .password(usuario.getPassword())
+                    .roles(usuario.getRol().name())
                     .build();
         };
+
     }
 }
 

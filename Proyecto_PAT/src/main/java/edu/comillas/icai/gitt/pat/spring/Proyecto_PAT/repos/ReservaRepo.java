@@ -22,6 +22,15 @@ public interface ReservaRepo extends CrudRepository<Reserva, Integer> {
     // reservas de un usuario en un día
     List<Reserva> findByUsuarioAndFechaReserva(Usuario usuario, LocalDate fechaReserva);
 
+    // reservas por idUsuario (útil para filtros)
+    List<Reserva> findByUsuario_IdUsuario(Integer idUsuario);
+
+    // reservas por idPista
+    List<Reserva> findByPista_IdPista(Integer idPista);
+
+    // reservas por pista y fecha
+    List<Reserva> findByPista_IdPistaAndFechaReserva(Integer idPista, LocalDate fecha);
+
     // métodos básicos
     Iterable<Reserva> findAll();
     Optional<Reserva> findById(Integer id);

@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface UsuarioRepo extends CrudRepository<Usuario, Integer> {
 
     // login
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmailIgnoreCase(String email);
 
     // comprobar duplicado en registro
     boolean existsByEmail(String email);

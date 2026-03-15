@@ -1,66 +1,35 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers;
 
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Reserva;
-import org.springframework.http.HttpStatus;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.services.AdminService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.List;
 
-//Nos permite que un ADMIN vea todas las reservas del sistema, con filtros opcionales
+// Permite que un ADMIN vea todas las reservas del sistema con filtros opcionales
 @RestController
 public class AdminController {
 
-    // crea reservations controller, admin controller y le pasa referencia a reservationsController
-    // admin necesita acceder a la memoria de reservas
-    private final ReservationsController reservationsController;
+    private final AdminService adminService;
 
-    public AdminController(ReservationsController reservationsController) {
-        this.reservationsController = reservationsController;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     // (ADMIN) Ver reservas de todos
-    // Endpoint principal
     @GetMapping("/pistaPadel/admin/reservations")
-    // Antes de ejecutarse se valida autenticación y rol (Spring Security)
-    @PreAuthorize("hasRole('ADMIN')") // 401 si no autenticado, 403 si no es ADMIN
+
+    // Spring Security valida autenticación y rol
+    // 401 si no autenticado, 403 si no es ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     public List<Reserva> getAllReservations(
             @RequestParam(required = false) String date,
             @RequestParam(required = false) Integer courtId,
             @RequestParam(required = false) Integer userId
     ) {
 
-        // Observamos todas las reservas
-        List<Reserva> reservas = reservationsController.getAllInternal();
+        return adminService.getAllReservations(date, courtId, userId);
 
-        // Filtro por date si viene
-        if (date != null) {
-            try {
-                LocalDate parsedDate = LocalDate.parse(date);
-                reservas = reservas.stream()
-                        .filter(r -> r.fechaReserva().equals(parsedDate))
-                        .toList();
-            } catch (Exception e) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST); // 400 si formato incorrecto
-            }
-        }
-
-        // Filtro por courtId si viene
-        if (courtId != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.idPista() == courtId)
-                    .toList();
-        }
-
-        // Filtro por userId si viene
-        if (userId != null) {
-            reservas = reservas.stream()
-                    .filter(r -> r.idUsuario() == userId)
-                    .toList();
-        }
-
-        return reservas; // 200 si funciona
     }
 }
