@@ -56,16 +56,9 @@ public class ConfiguracionSeguridad {
                 .logout(logout -> logout
                         // URL para cerrar sesión
                         .logoutUrl("/pistaPadel/auth/logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
                         // 204 No Content si logout correcto
                         .logoutSuccessHandler((request, response, authentication) ->
                                 response.setStatus(HttpStatus.NO_CONTENT.value()))
-                )
-                // Evita redirección HTML y devuelve 401 si no autenticado
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) ->
-                                response.setStatus(HttpStatus.UNAUTHORIZED.value()))
                 )
                 // Desactivamos CSRF porque estamos haciendo una API REST sin sesiones ni formularios
                 // En SSR (aplicaciones web con vistas y cookies) sí se necesita CSRF para evitar ataques
