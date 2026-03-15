@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +33,7 @@ public class Usuario {
         @Column(nullable = false, unique = true)
         private String email;
 
+        @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
         @NotBlank(message = "La contraseña es obligatoria")
         @Column(nullable = false)
         private String password;
@@ -39,13 +41,12 @@ public class Usuario {
         @Pattern(regexp = "\\d{9}", message = "El teléfono debe tener 9 dígitos")
         private String telefono;
 
-        @NotNull(message = "El rol es obligatorio")
         @Enumerated(EnumType.STRING)
         private Rol rol;
 
         private LocalDateTime fechaRegistro;
 
-        private boolean activo;
+        private Boolean activo;
 
         // Un usuario puede tener muchas reservas
         // Se ignora en JSON para evitar bucle infinito entre Usuario/Pista y Reserva
@@ -58,7 +59,7 @@ public class Usuario {
 
         public Usuario() {}
 
-        public Usuario(Integer idUsuario, String nombre, String apellidos, String email, String password, String telefono, Rol rol, LocalDateTime fechaRegistro, boolean activo) {
+        public Usuario(Integer idUsuario, String nombre, String apellidos, String email, String password, String telefono, Rol rol, LocalDateTime fechaRegistro, Boolean activo) {
                 this.idUsuario = idUsuario;
                 this.nombre = nombre;
                 this.apellidos = apellidos;
@@ -104,7 +105,7 @@ public class Usuario {
                 return fechaRegistro;
         }
 
-        public boolean isActivo() {
+        public Boolean isActivo() {
                 return activo;
         }
 
@@ -146,7 +147,7 @@ public class Usuario {
                 this.fechaRegistro = fechaRegistro;
         }
 
-        public void setActivo(boolean activo) {
+        public void setActivo(Boolean activo) {
                 this.activo = activo;
         }
 

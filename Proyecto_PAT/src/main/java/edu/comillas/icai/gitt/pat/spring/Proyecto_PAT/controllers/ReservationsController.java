@@ -1,6 +1,7 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers;
 
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Reserva;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.ReservaRequest;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.services.ReservationsService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -19,15 +20,17 @@ public class ReservationsController {
         this.reservationsService = reservationsService;
     }
 
+
     // Crear reserva
     @PostMapping("/pistaPadel/reservations")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
-    public Reserva crearReserva(Authentication auth, @Valid @RequestBody Reserva reserva) {
+    public Reserva crearReserva(Authentication auth, @Valid @RequestBody ReservaRequest reservaRequest) {
 
-        return reservationsService.crearReserva(auth, reserva);
+        return reservationsService.crearReserva(auth, reservaRequest);
 
     }
+
 
     // Listar reservas
     @GetMapping("/pistaPadel/reservations")
@@ -50,9 +53,11 @@ public class ReservationsController {
     // Modificar reserva
     @PatchMapping("/pistaPadel/reservations/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Reserva reprogramarReserva(Authentication auth, @PathVariable int id, @Valid @RequestBody Reserva reservaActualizada) {
+    public Reserva reprogramarReserva(Authentication auth,
+                                      @PathVariable int id,
+                                      @Valid @RequestBody ReservaRequest reservaRequest) {
 
-        return reservationsService.reprogramarReserva(auth, id, reservaActualizada);
+        return reservationsService.reprogramarReserva(auth, id, reservaRequest);
 
     }
 

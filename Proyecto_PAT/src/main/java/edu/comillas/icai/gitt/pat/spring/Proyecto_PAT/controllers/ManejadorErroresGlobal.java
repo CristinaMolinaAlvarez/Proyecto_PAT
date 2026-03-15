@@ -16,6 +16,7 @@ public class ManejadorErroresGlobal {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> manejarResponseStatus(ResponseStatusException ex) {
+
         return ResponseEntity
                 .status(ex.getStatusCode())
                 .body(Map.of(
@@ -58,6 +59,15 @@ public class ManejadorErroresGlobal {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> manejarErrorGeneral(Exception ex) {
+        /*ex.printStackTrace();
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of(
+                        "timestamp", LocalDateTime.now(),
+                        "status", 500,
+                        "error", ex.getMessage()   // 👈 así verás el mensaje real en Postman
+                ));*/
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of(

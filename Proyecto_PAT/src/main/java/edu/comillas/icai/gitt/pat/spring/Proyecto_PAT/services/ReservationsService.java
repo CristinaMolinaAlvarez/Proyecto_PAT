@@ -1,9 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.services;
 
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Pista;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Reserva;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.*;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.PistaRepo;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.ReservaRepo;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
@@ -30,13 +27,12 @@ public class ReservationsService {
     private PistaRepo pistaRepo;
 
     // Crear reserva
-    public Reserva crearReserva(Authentication auth, Reserva reserva) {
+    public Reserva crearReserva(Authentication auth, ReservaRequest reservaRequest) {
 
         Usuario usuario = resolverUsuario(auth);
 
         // 404 si la pista no existe
-        Integer idPista = reserva.getPista().getIdPista();
-        Pista pista = pistaRepo.findById(idPista)
+        Pista pista = pistaRepo.findById(reservaRequest.idPista)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         // 409 si la pista está inactiva
@@ -44,20 +40,19 @@ public class ReservationsService {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        // Calcular horaFin
-        LocalTime horaFin = reserva.getHoraInicio()
-                .plusMinutes(reserva.getDuracionMinutos());
+        // Calcular hora fin
+        LocalTime horaFin = reservaRequest.horaInicio.plusMinutes(reservaRequest.duracionMinutos);
 
         // 409 si el horario ya está ocupado
         List<Reserva> reservasMismaPistaMismoDia =
-                reservaRepo.findByPista_IdPistaAndFechaReserva(idPista, reserva.getFechaReserva());
+                reservaRepo.findByPista_IdPistaAndFechaReserva(reservaRequest.idPista, reservaRequest.fechaReserva);
 
         boolean ocupado = false;
 
         for (Reserva r : reservasMismaPistaMismoDia) {
             if (r.getEstado() == Reserva.Estado.ACTIVA) {
                 if (r.getHoraInicio().isBefore(horaFin)
-                        && reserva.getHoraInicio().isBefore(r.getHoraFin())) {
+                        && reservaRequest.horaInicio.isBefore(r.getHoraFin())) {
                     ocupado = true;
                     break;
                 }
@@ -68,14 +63,20 @@ public class ReservationsService {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
+        // Crear la reserva
+        Reserva reserva = new Reserva();
         reserva.setUsuario(usuario);
         reserva.setPista(pista);
+        reserva.setFechaReserva(reservaRequest.fechaReserva);
+        reserva.setHoraInicio(reservaRequest.horaInicio);
+        reserva.setDuracionMinutos(reservaRequest.duracionMinutos);
         reserva.setHoraFin(horaFin);
         reserva.setEstado(Reserva.Estado.ACTIVA);
         reserva.setFechaCreacion(LocalDateTime.now());
 
         return reservaRepo.save(reserva);
     }
+
 
     // Listar reservas
     public List<Reserva> listarReservas(Authentication auth) {
@@ -108,25 +109,26 @@ public class ReservationsService {
     }
 
     // Modificar reserva
-    public Reserva reprogramarReserva(Authentication auth, int id, Reserva reservaActualizada) {
+    public Reserva reprogramarReserva(Authentication auth, int id, ReservaRequest reservaRequest) {
 
         Usuario usuario = resolverUsuario(auth);
 
         Reserva existente = reservaRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        // 403 si no es suya y no es admin
         if (!esAdmin(usuario) && !existente.getUsuario().getIdUsuario().equals(usuario.getIdUsuario())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        LocalTime nuevaHoraFin = reservaActualizada.getHoraInicio()
-                .plusMinutes(reservaActualizada.getDuracionMinutos());
+        LocalTime nuevaHoraFin = reservaRequest.horaInicio
+                .plusMinutes(reservaRequest.duracionMinutos);
 
         // 409 si el nuevo horario está ocupado
         List<Reserva> reservasMismaPistaMismoDia =
                 reservaRepo.findByPista_IdPistaAndFechaReserva(
                         existente.getPista().getIdPista(),
-                        reservaActualizada.getFechaReserva()
+                        reservaRequest.fechaReserva
                 );
 
         boolean ocupado = false;
@@ -134,7 +136,7 @@ public class ReservationsService {
         for (Reserva r : reservasMismaPistaMismoDia) {
             if (!r.getIdReserva().equals(id) && r.getEstado() == Reserva.Estado.ACTIVA) {
                 if (r.getHoraInicio().isBefore(nuevaHoraFin)
-                        && reservaActualizada.getHoraInicio().isBefore(r.getHoraFin())) {
+                        && reservaRequest.horaInicio.isBefore(r.getHoraFin())) {
                     ocupado = true;
                     break;
                 }
@@ -145,11 +147,10 @@ public class ReservationsService {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        existente.setFechaReserva(reservaActualizada.getFechaReserva());
-        existente.setHoraInicio(reservaActualizada.getHoraInicio());
-        existente.setDuracionMinutos(reservaActualizada.getDuracionMinutos());
+        existente.setFechaReserva(reservaRequest.fechaReserva);
+        existente.setHoraInicio(reservaRequest.horaInicio);
+        existente.setDuracionMinutos(reservaRequest.duracionMinutos);
         existente.setHoraFin(nuevaHoraFin);
-        existente.setEstado(Reserva.Estado.ACTIVA);
 
         return reservaRepo.save(existente);
     }

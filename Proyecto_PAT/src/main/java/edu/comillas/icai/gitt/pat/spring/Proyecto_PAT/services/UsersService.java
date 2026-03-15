@@ -78,7 +78,9 @@ public class UsersService {
         existente.setApellidos(usuario.getApellidos());
         existente.setEmail(usuario.getEmail());
         existente.setTelefono(usuario.getTelefono());
-        existente.setPassword(usuario.getPassword());
+        // Se añade el prefijo {noop} para indicar a Spring Security que la contraseña
+        // está guardada sin cifrar y debe compararse tal cual
+        existente.setPassword("{noop}" + usuario.getPassword());
 
         // Guardamos el usuario actualizado
         return usuarioRepo.save(existente);

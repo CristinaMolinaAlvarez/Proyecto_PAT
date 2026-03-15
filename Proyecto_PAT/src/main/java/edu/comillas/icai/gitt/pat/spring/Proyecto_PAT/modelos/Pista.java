@@ -1,5 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -37,6 +38,7 @@ public class Pista {
         // Si se borra una pista se borran sus reservas
         @OneToMany(mappedBy = "pista")
         @OnDelete(action = OnDeleteAction.CASCADE)
+        @JsonIgnore
         private List<Reserva> reservas;
 
         public Pista() {}
