@@ -2,7 +2,7 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 
 
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers.BaseDatos;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Usuario;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -10,10 +10,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 

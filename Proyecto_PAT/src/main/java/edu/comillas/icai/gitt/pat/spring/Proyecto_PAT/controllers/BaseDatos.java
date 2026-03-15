@@ -1,9 +1,9 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers;
 
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Pista;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Reserva;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Rol;
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Usuario;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Pista;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Reserva;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

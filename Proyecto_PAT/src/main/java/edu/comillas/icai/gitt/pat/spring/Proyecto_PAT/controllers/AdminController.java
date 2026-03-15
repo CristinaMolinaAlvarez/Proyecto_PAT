@@ -1,6 +1,6 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers;
 
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelo.Reserva;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Reserva;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
