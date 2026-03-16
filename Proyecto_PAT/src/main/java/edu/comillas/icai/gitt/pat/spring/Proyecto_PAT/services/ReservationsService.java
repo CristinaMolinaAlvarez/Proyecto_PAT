@@ -32,7 +32,7 @@ public class ReservationsService {
         Usuario usuario = resolverUsuario(auth);
 
         // 404 si la pista no existe
-        Pista pista = pistaRepo.findById(reservaRequest.idPista)
+        Pista pista = pistaRepo.findById(reservaRequest.getIdPista())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         // 409 si la pista está inactiva
@@ -41,18 +41,18 @@ public class ReservationsService {
         }
 
         // Calcular hora fin
-        LocalTime horaFin = reservaRequest.horaInicio.plusMinutes(reservaRequest.duracionMinutos);
+        LocalTime horaFin = reservaRequest.getHoraInicio().plusMinutes(reservaRequest.getDuracionMinutos());
 
         // 409 si el horario ya está ocupado
         List<Reserva> reservasMismaPistaMismoDia =
-                reservaRepo.findByPista_IdPistaAndFechaReserva(reservaRequest.idPista, reservaRequest.fechaReserva);
+                reservaRepo.findByPista_IdPistaAndFechaReserva(reservaRequest.getIdPista(), reservaRequest.getFechaReserva());
 
         boolean ocupado = false;
 
         for (Reserva r : reservasMismaPistaMismoDia) {
             if (r.getEstado() == Reserva.Estado.ACTIVA) {
                 if (r.getHoraInicio().isBefore(horaFin)
-                        && reservaRequest.horaInicio.isBefore(r.getHoraFin())) {
+                        && reservaRequest.getHoraInicio().isBefore(r.getHoraFin())) {
                     ocupado = true;
                     break;
                 }
@@ -67,9 +67,9 @@ public class ReservationsService {
         Reserva reserva = new Reserva();
         reserva.setUsuario(usuario);
         reserva.setPista(pista);
-        reserva.setFechaReserva(reservaRequest.fechaReserva);
-        reserva.setHoraInicio(reservaRequest.horaInicio);
-        reserva.setDuracionMinutos(reservaRequest.duracionMinutos);
+        reserva.setFechaReserva(reservaRequest.getFechaReserva());
+        reserva.setHoraInicio(reservaRequest.getHoraInicio());
+        reserva.setDuracionMinutos(reservaRequest.getDuracionMinutos());
         reserva.setHoraFin(horaFin);
         reserva.setEstado(Reserva.Estado.ACTIVA);
         reserva.setFechaCreacion(LocalDateTime.now());
@@ -121,14 +121,14 @@ public class ReservationsService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
 
-        LocalTime nuevaHoraFin = reservaRequest.horaInicio
-                .plusMinutes(reservaRequest.duracionMinutos);
+        LocalTime nuevaHoraFin = reservaRequest.getHoraInicio()
+                .plusMinutes(reservaRequest.getDuracionMinutos());
 
         // 409 si el nuevo horario está ocupado
         List<Reserva> reservasMismaPistaMismoDia =
                 reservaRepo.findByPista_IdPistaAndFechaReserva(
                         existente.getPista().getIdPista(),
-                        reservaRequest.fechaReserva
+                        reservaRequest.getFechaReserva()
                 );
 
         boolean ocupado = false;
@@ -136,7 +136,7 @@ public class ReservationsService {
         for (Reserva r : reservasMismaPistaMismoDia) {
             if (!r.getIdReserva().equals(id) && r.getEstado() == Reserva.Estado.ACTIVA) {
                 if (r.getHoraInicio().isBefore(nuevaHoraFin)
-                        && reservaRequest.horaInicio.isBefore(r.getHoraFin())) {
+                        && reservaRequest.getHoraInicio().isBefore(r.getHoraFin())) {
                     ocupado = true;
                     break;
                 }
@@ -147,9 +147,9 @@ public class ReservationsService {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
-        existente.setFechaReserva(reservaRequest.fechaReserva);
-        existente.setHoraInicio(reservaRequest.horaInicio);
-        existente.setDuracionMinutos(reservaRequest.duracionMinutos);
+        existente.setFechaReserva(reservaRequest.getFechaReserva());
+        existente.setHoraInicio(reservaRequest.getHoraInicio());
+        existente.setDuracionMinutos(reservaRequest.getDuracionMinutos());
         existente.setHoraFin(nuevaHoraFin);
 
         return reservaRepo.save(existente);

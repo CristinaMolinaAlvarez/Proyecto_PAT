@@ -10,7 +10,7 @@ import java.time.LocalTime;
 public class ReservaRequest {
 
     @NotNull
-    private Long idPista;
+    private int idPista;
 
     @NotNull
     private LocalDate fechaReserva;
@@ -25,11 +25,11 @@ public class ReservaRequest {
     @Max(180)
     private int duracionMinutos;
 
-    public Long getIdPista() {
+    public int getIdPista() {
         return idPista;
     }
 
-    public void setIdPista(Long idPista) {
+    public void setIdPista(int idPista) {
         this.idPista = idPista;
     }
 

@@ -105,7 +105,7 @@ public class Usuario {
                 return fechaRegistro;
         }
 
-        public Boolean isActivo() {
+        public Boolean getActivo() {
                 return activo;
         }
 
