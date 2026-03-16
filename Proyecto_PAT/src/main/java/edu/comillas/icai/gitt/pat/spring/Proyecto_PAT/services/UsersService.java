@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class UsersService {
 
-    private UsuarioRepo usuarioRepo;
+    private final UsuarioRepo usuarioRepo;
     private final PasswordEncoder passwordEncoder;
 
     public UsersService(UsuarioRepo usuarioRepo, PasswordEncoder passwordEncoder) {
