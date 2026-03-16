@@ -3,10 +3,9 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.services;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -15,8 +14,13 @@ import java.util.Optional;
 @Service
 public class UsersService {
 
-    @Autowired
     private UsuarioRepo usuarioRepo;
+    private final PasswordEncoder passwordEncoder;
+
+    public UsersService(UsuarioRepo usuarioRepo, PasswordEncoder passwordEncoder) {
+        this.usuarioRepo = usuarioRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     // Registrar usuario
     public Usuario register(Usuario usuario) {
@@ -29,6 +33,7 @@ public class UsersService {
         usuario.setRol(Rol.USER);
         usuario.setFechaRegistro(LocalDateTime.now());
         usuario.setActivo(true);
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
         return usuarioRepo.save(usuario);
     }
@@ -78,10 +83,10 @@ public class UsersService {
         existente.setApellidos(usuario.getApellidos());
         existente.setEmail(usuario.getEmail());
         existente.setTelefono(usuario.getTelefono());
-        // Se añade el prefijo {noop} para indicar a Spring Security que la contraseña
-        // está guardada sin cifrar y debe compararse tal cual
-        existente.setPassword("{noop}" + usuario.getPassword());
-
+        //No usamos noop, ya que la queremos guardar cifrada
+        if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
+            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         // Guardamos el usuario actualizado
         return usuarioRepo.save(existente);
     }

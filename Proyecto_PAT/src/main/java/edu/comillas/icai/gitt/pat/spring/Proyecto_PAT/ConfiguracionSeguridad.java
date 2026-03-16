@@ -1,7 +1,5 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 
-
-import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.controllers.BaseDatos;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
 import org.springframework.context.annotation.Bean;
@@ -13,9 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-
 
 @Configuration
 @EnableWebSecurity
@@ -66,12 +64,23 @@ public class ConfiguracionSeguridad {
         return http.build();
     }
 
+
+    //  Queremos que las contraseñas se puedan cifrar, ya que no queremos que se guarden en texto plano
+    // BCrypt es el codificador esándar y seguro para passwords en Spring
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
     public UserDetailsService usuarios() {
         return email -> {
             Usuario usuario = usuarioRepo.findByEmailIgnoreCase(email)
                     .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-            return User.withDefaultPasswordEncoder()
+
+
+            //Necesitamos transformar el Usuario de base de datos en un Usuario Spring que entienda para hacer login
+            return User.builder()
                     .username(usuario.getEmail())
                     .password(usuario.getPassword())
                     .roles(usuario.getRol().name())
@@ -80,8 +89,6 @@ public class ConfiguracionSeguridad {
 
     }
 }
-
-
 
 
 
