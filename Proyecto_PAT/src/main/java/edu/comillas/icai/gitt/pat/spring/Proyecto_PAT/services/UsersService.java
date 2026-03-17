@@ -3,9 +3,10 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.services;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.util.Hashing;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -15,11 +16,11 @@ import java.util.Optional;
 public class UsersService {
 
     private final UsuarioRepo usuarioRepo;
-    private final PasswordEncoder passwordEncoder;
+    private final Hashing hashing;
 
-    public UsersService(UsuarioRepo usuarioRepo, PasswordEncoder passwordEncoder) {
+    public UsersService(UsuarioRepo usuarioRepo, Hashing hashing) {
         this.usuarioRepo = usuarioRepo;
-        this.passwordEncoder = passwordEncoder;
+        this.hashing = hashing;
     }
 
     // Registrar usuario
@@ -33,7 +34,7 @@ public class UsersService {
         usuario.setRol(Rol.USER);
         usuario.setFechaRegistro(LocalDateTime.now());
         usuario.setActivo(true);
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setPassword(hashing.hash(usuario.getPassword()));
 
         return usuarioRepo.save(usuario);
     }
@@ -85,7 +86,7 @@ public class UsersService {
         existente.setTelefono(usuario.getTelefono());
         //No usamos noop, ya que la queremos guardar cifrada
         if (usuario.getPassword() != null && !usuario.getPassword().isBlank()) {
-            existente.setPassword(passwordEncoder.encode(usuario.getPassword()));
+            existente.setPassword(hashing.hash(usuario.getPassword()));
         }
         // Guardamos el usuario actualizado
         return usuarioRepo.save(existente);

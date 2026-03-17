@@ -68,7 +68,7 @@ public class ConfiguracionSeguridad {
 
 
     //  Queremos que las contraseñas se puedan cifrar, ya que no queremos que se guarden en texto plano
-    // BCrypt es el codificador esándar y seguro para passwords en Spring
+    // BCrypt es el codificador estándar y seguro para passwords en Spring
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

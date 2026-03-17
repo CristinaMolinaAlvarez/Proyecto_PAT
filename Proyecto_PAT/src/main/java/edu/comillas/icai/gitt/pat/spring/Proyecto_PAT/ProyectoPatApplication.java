@@ -3,6 +3,7 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
 import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.util.Hashing;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +19,7 @@ public class ProyectoPatApplication {
 	}
 
 	@Bean
-	CommandLineRunner crearAdmin(UsuarioRepo usuarioRepo, PasswordEncoder passwordEncoder) {
+	CommandLineRunner crearAdmin(UsuarioRepo usuarioRepo, Hashing hashing) {
 		return args -> {
 			// Comprueba si ya existe un usuario con email admin@padel.com
 			// Si no existe, se crea automáticamente al arrancar la aplicación
@@ -31,7 +32,7 @@ public class ProyectoPatApplication {
 				admin.setEmail("admin@padel.com");
 
 				//Ciframos la contraseña
-				admin.setPassword(passwordEncoder.encode("admin"));
+				admin.setPassword(hashing.hash("admin"));
 				admin.setRol(Rol.ADMIN);
 				admin.setActivo(true);
 				admin.setFechaRegistro(LocalDateTime.now());
