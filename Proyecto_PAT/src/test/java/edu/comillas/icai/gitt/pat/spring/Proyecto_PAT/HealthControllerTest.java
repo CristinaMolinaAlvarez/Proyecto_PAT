@@ -3,7 +3,6 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,7 +16,6 @@ class HealthControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(username = "user@padel.com", roles = "USER")
     void healthShouldReturnOk() throws Exception {
         mockMvc.perform(get("/pistaPadel/health"))
                 .andExpect(status().isOk())

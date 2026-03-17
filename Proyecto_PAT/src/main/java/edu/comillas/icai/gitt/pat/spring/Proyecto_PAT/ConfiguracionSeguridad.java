@@ -34,6 +34,7 @@ public class ConfiguracionSeguridad {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/pistaPadel/auth/register").permitAll()
                         .requestMatchers("/pistaPadel/auth/login").permitAll()
+                        .requestMatchers("/pistaPadel/health").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
