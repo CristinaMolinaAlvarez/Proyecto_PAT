@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -61,9 +62,9 @@ class AvailabilityControllerTest {
 
     //fecha obligatoria o inválida
     @Test
+    @WithMockUser(username = "usuario@test.com", roles = "USER")
     void availabilityWithoutDateShouldReturn400() throws Exception {
-        mockMvc.perform(get("/pistaPadel/availability")
-                        .with(httpBasic("usuario", "clave")))
+        mockMvc.perform(get("/pistaPadel/availability"))
                 .andExpect(status().isBadRequest());
     }
 

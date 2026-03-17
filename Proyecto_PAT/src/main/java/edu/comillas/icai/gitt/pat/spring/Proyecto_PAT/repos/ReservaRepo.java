@@ -31,6 +31,7 @@ public interface ReservaRepo extends CrudRepository<Reserva, Integer> {
     // reservas por pista y fecha
     List<Reserva> findByPista_IdPistaAndFechaReserva(Integer idPista, LocalDate fecha);
 
+    List<Reserva> findByFechaReserva(LocalDate fechaReserva);
     // métodos básicos
     Iterable<Reserva> findAll();
     Optional<Reserva> findById(Integer id);
