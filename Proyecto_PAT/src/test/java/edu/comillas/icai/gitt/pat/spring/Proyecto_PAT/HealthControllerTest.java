@@ -2,11 +2,10 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -18,9 +17,9 @@ class HealthControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(username = "user@padel.com", roles = "USER")
     void healthShouldReturnOk() throws Exception {
-        mockMvc.perform(get("/pistaPadel/health")
-                        .with(httpBasic("usuario", "clave")))
+        mockMvc.perform(get("/pistaPadel/health"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("ok"));
     }
