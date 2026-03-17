@@ -16,8 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ReservationsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReservationsService.class);
 
     @Autowired
     private ReservaRepo reservaRepo;
@@ -29,14 +34,22 @@ public class ReservationsService {
     // Crear reserva
     public Reserva crearReserva(Authentication auth, ReservaRequest reservaRequest) {
 
+        logger.debug("Intentando crear reserva para pista {} en fecha {} a las {}",
+                reservaRequest.getIdPista(),
+                reservaRequest.getFechaReserva(),
+                reservaRequest.getHoraInicio());
+
         Usuario usuario = resolverUsuario(auth);
 
         // 404 si la pista no existe
         Pista pista = pistaRepo.findById(reservaRequest.getIdPista())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+                .orElseThrow(() -> {
+                    logger.error("No se puede crear reserva. La pista {} no existe", reservaRequest.getIdPista());
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND);
+                });
         // 409 si la pista está inactiva
         if (!pista.isActiva()) {
+            logger.error("No se puede crear reserva. La pista {} está inactiva", pista.getIdPista());
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
@@ -60,6 +73,8 @@ public class ReservationsService {
         }
 
         if (ocupado) {
+            logger.error("No se puede crear reserva. La pista {} ya está ocupada en ese horario",
+                    reservaRequest.getIdPista());
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 

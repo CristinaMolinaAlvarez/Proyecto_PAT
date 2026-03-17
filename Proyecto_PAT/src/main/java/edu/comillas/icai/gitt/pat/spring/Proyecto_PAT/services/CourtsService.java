@@ -8,9 +8,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class CourtsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(CourtsService.class);
 
     @Autowired
     private PistaRepo pistaRepo;

@@ -15,9 +15,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AvailabilityService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AvailabilityService.class);
 
     @Autowired
     private PistaRepo pistaRepo;

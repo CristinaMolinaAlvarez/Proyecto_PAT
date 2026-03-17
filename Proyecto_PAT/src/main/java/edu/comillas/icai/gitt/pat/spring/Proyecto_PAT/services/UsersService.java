@@ -12,9 +12,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class UsersService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UsersService.class);
     private final UsuarioRepo usuarioRepo;
     private final Hashing hashing;
 
@@ -28,6 +32,7 @@ public class UsersService {
 
         // 409 si el email ya existe
         if (usuarioRepo.existsByEmail(usuario.getEmail())) {
+            logger.error("No se puede registrar usuario. El email {} ya existe", usuario.getEmail());
             throw new ResponseStatusException(HttpStatus.CONFLICT);
         }
 
@@ -35,6 +40,10 @@ public class UsersService {
         usuario.setFechaRegistro(LocalDateTime.now());
         usuario.setActivo(true);
         usuario.setPassword(hashing.hash(usuario.getPassword()));
+
+        Usuario guardado = usuarioRepo.save(usuario);
+        logger.info("Usuario registrado correctamente con email {}", guardado.getEmail());
+
 
         return usuarioRepo.save(usuario);
     }
@@ -44,13 +53,19 @@ public class UsersService {
 
         // 401 si no está autenticado
         if (authentication == null) {
+            logger.error("Acceso a /auth/me sin autenticación");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
         String email = authentication.getName();
 
+        logger.debug("Usuario autenticado detectado: {}", email);
+
         return usuarioRepo.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> {
+                    logger.error("Usuario autenticado {} no encontrado en base de datos", email);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND);
+                });
     }
 
     // GET lista usuarios (ADMIN)
