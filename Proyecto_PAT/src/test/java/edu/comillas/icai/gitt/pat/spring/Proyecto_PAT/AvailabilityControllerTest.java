@@ -58,4 +58,13 @@ class AvailabilityControllerTest {
                         .param("date", "2026-02-14"))
                 .andExpect(status().isUnauthorized());
     }
+
+    //fecha obligatoria o inválida
+    @Test
+    void availabilityWithoutDateShouldReturn400() throws Exception {
+        mockMvc.perform(get("/pistaPadel/availability")
+                        .with(httpBasic("usuario", "clave")))
+                .andExpect(status().isBadRequest());
+    }
+
 }
