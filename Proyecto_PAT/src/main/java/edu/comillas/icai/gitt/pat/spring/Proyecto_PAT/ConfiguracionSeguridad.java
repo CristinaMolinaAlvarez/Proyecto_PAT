@@ -28,38 +28,39 @@ public class ConfiguracionSeguridad {
     @Bean
     public SecurityFilterChain configuracion(HttpSecurity http) throws Exception {
 
-        // Reglas de acceso a rutas
-        http.authorizeHttpRequests(authorize -> authorize
-                        // Registro y login no requieren estar autenticado
+        http
+                .csrf(csrf -> csrf.disable())
+
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/pistaPadel/auth/register").permitAll()
                         .requestMatchers("/pistaPadel/auth/login").permitAll()
-                        // El resto sí requiere autenticación
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
 
-                // Configuración del login
+                // Si no está autenticado, devolver 401 y no redirigir
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                                response.sendError(HttpStatus.UNAUTHORIZED.value()))
+                )
+
+                // Para poder probar con MockMvc usando httpBasic(...)
+                .httpBasic(httpBasic -> {})
+
+                // Seguís manteniendo vuestro login propio
                 .formLogin(form -> form
-                        // URL que Spring usa para procesar el login
                         .loginProcessingUrl("/pistaPadel/auth/login")
-                        // 200 OK si login correcto
                         .successHandler((request, response, authentication) ->
                                 response.setStatus(HttpStatus.OK.value()))
-                        // 401 si credenciales incorrectas
                         .failureHandler((request, response, authenticationException) ->
                                 response.setStatus(HttpStatus.UNAUTHORIZED.value()))
                 )
 
-                // Configuración del logout
                 .logout(logout -> logout
-                        // URL para cerrar sesión
                         .logoutUrl("/pistaPadel/auth/logout")
-                        // 204 No Content si logout correcto
                         .logoutSuccessHandler((request, response, authentication) ->
                                 response.setStatus(HttpStatus.NO_CONTENT.value()))
-                )
-                // Desactivamos CSRF porque estamos haciendo una API REST sin sesiones ni formularios
-                // En SSR (aplicaciones web con vistas y cookies) sí se necesita CSRF para evitar ataques
-                .csrf(csrf -> csrf.disable());
+                );
 
         return http.build();
     }
