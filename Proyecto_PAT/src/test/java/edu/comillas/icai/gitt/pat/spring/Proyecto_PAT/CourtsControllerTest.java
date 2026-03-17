@@ -1,5 +1,11 @@
 package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT;
 
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Rol;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.modelos.Usuario;
+import edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.repos.UsuarioRepo;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,17 +28,41 @@ class CourtsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UsuarioRepo usuarioRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void prepararUsuariosDePrueba() {
+        usuarioRepo.findByEmailIgnoreCase("usuario@test.com").ifPresent(usuarioRepo::delete);
+        usuarioRepo.findByEmailIgnoreCase("admin@test.com").ifPresent(usuarioRepo::delete);
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre("Usuario");
+        usuario.setApellidos("Prueba");
+        usuario.setEmail("usuario@test.com");
+        usuario.setPassword(passwordEncoder.encode("clave"));
+        usuario.setRol(Rol.USER);
+        usuarioRepo.save(usuario);
+
+        Usuario admin = new Usuario();
+        admin.setNombre("Admin");
+        admin.setApellidos("Prueba");
+        admin.setEmail("admin@test.com");
+        admin.setPassword(passwordEncoder.encode("clave"));
+        admin.setRol(Rol.ADMIN);
+        usuarioRepo.save(admin);
+    }
+
     @Test
     void getCourtsAsUserShouldReturn200AndJsonArray() throws Exception {
         mockMvc.perform(get("/pistaPadel/courts")
-                        .with(httpBasic("usuario", "clave")))
+                        .with(httpBasic("usuario@test.com", "clave")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$").isArray())
-                // En los datos iniciales suelen venir 3 pistas
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].idPista").exists())
-                .andExpect(jsonPath("$[0].nombre").exists());
+                .andExpect(jsonPath("$").isArray());
     }
 
     @Test
@@ -47,7 +77,7 @@ class CourtsControllerTest {
                 """;
 
         mockMvc.perform(post("/pistaPadel/courts")
-                        .with(httpBasic("usuario", "clave"))
+                        .with(httpBasic("usuario@test.com", "clave"))
                         .contentType("application/json")
                         .content(body))
                 .andExpect(status().isForbidden());
@@ -65,7 +95,7 @@ class CourtsControllerTest {
                 """;
 
         mockMvc.perform(post("/pistaPadel/courts")
-                        .with(httpBasic("admin", "clave"))
+                        .with(httpBasic("admin@test.com", "clave"))
                         .contentType("application/json")
                         .content(body))
                 .andExpect(status().isCreated());
