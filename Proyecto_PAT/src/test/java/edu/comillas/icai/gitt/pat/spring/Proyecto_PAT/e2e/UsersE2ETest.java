@@ -2,18 +2,20 @@ package edu.comillas.icai.gitt.pat.spring.Proyecto_PAT.e2e;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UsersE2ETest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+    @LocalServerPort
+    private int port;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Test
     void registerUserShouldReturn201() {
@@ -30,7 +32,7 @@ class UsersE2ETest {
                 """;
 
         ResponseEntity<String> response = restTemplate.exchange(
-                "/pistaPadel/auth/register",
+                "http://localhost:" + port + "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
                 String.class
@@ -54,14 +56,14 @@ class UsersE2ETest {
                 """;
 
         ResponseEntity<String> first = restTemplate.exchange(
-                "/pistaPadel/auth/register",
+                "http://localhost:" + port + "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
                 String.class
         );
 
         ResponseEntity<String> second = restTemplate.exchange(
-                "/pistaPadel/auth/register",
+                "http://localhost:" + port + "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
                 String.class
