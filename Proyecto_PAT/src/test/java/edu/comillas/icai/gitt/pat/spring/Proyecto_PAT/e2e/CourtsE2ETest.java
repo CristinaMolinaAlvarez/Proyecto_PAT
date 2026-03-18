@@ -8,17 +8,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class CourtsE2ETest {
 
-    @Autowired
-    private TestRestTemplate client;
+    @LocalServerPort
+    private int port;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
     private UsuarioRepo usuarioRepo;
@@ -44,6 +47,7 @@ class CourtsE2ETest {
     void createCourtAsAdminShouldReturn201() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBasicAuth("admin@test.com", "clave");
 
         String json = """
                 {
@@ -54,12 +58,12 @@ class CourtsE2ETest {
                 }
                 """;
 
-        TestRestTemplate adminClient = client.withBasicAuth("admin@test.com", "clave");
+        HttpEntity<String> request = new HttpEntity<>(json, headers);
 
-        ResponseEntity<String> response = adminClient.exchange(
-                "/pistaPadel/courts",
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/pistaPadel/courts",
                 HttpMethod.POST,
-                new HttpEntity<>(json, headers),
+                request,
                 String.class
         );
 

@@ -13,7 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 class UsersE2ETest {
 
     @Autowired
-    private TestRestTemplate client;
+    private TestRestTemplate restTemplate;
 
     @Test
     void registerUserShouldReturn201() {
@@ -29,7 +29,7 @@ class UsersE2ETest {
                 }
                 """;
 
-        ResponseEntity<String> response = client.exchange(
+        ResponseEntity<String> response = restTemplate.exchange(
                 "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
@@ -53,14 +53,14 @@ class UsersE2ETest {
                 }
                 """;
 
-        ResponseEntity<String> first = client.exchange(
+        ResponseEntity<String> first = restTemplate.exchange(
                 "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
                 String.class
         );
 
-        ResponseEntity<String> second = client.exchange(
+        ResponseEntity<String> second = restTemplate.exchange(
                 "/pistaPadel/auth/register",
                 HttpMethod.POST,
                 new HttpEntity<>(json, headers),
