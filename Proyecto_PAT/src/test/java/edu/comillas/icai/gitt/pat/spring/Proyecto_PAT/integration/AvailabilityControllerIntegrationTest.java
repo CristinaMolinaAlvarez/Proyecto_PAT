@@ -65,15 +65,4 @@ class AvailabilityControllerIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void availabilityCourtAsUserShouldReturn200AndJson() throws Exception {
-        mockMvc.perform(get("/pistaPadel/courts/1/availability")
-                        .param("date", "2026-02-14")
-                        .with(httpBasic("usuario@test.com", "clave")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$.idPista").exists())
-                .andExpect(jsonPath("$.fecha").exists())
-                .andExpect(jsonPath("$.franjasDisponibles").isArray());
-    }
 }

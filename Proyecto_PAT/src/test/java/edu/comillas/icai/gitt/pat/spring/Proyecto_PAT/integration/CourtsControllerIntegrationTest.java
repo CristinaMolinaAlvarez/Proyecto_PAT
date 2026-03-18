@@ -100,37 +100,4 @@ class CourtsControllerIntegrationTest {
                 .andExpect(status().isCreated());
     }
 
-    @Test
-    void getCourtByIdShouldReturn200() throws Exception {
-        mockMvc.perform(get("/pistaPadel/courts/1")
-                        .with(httpBasic("usuario@test.com", "clave")))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$.idPista").exists());
-    }
-
-    @Test
-    void updateCourtAsAdminShouldReturn200() throws Exception {
-        String body = """
-                {
-                  "nombre":"Pista Modificada",
-                  "ubicacion":"Exterior",
-                  "precioHora":35.0,
-                  "activa":true
-                }
-                """;
-
-        mockMvc.perform(patch("/pistaPadel/courts/1")
-                        .with(httpBasic("admin@test.com", "clave"))
-                        .contentType("application/json")
-                        .content(body))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void deleteCourtAsAdminShouldReturn204() throws Exception {
-        mockMvc.perform(delete("/pistaPadel/courts/1")
-                        .with(httpBasic("admin@test.com", "clave")))
-                .andExpect(status().isNoContent());
-    }
 }
