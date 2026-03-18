@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 
 //Activamos Scheduling
-@SpringBootApplication
 @EnableScheduling
 @SpringBootTest
 class ProyectoPatApplicationTests {
